@@ -220,7 +220,20 @@ public class BluetoothOppService extends Service {
             switch (msg.what) {
                 case STOP_LISTENER:
                     mSocketListener.stop();
-                    mListenStarted = false;
+                    if(mSocketListener != null){
+                        mSocketListener.stop();
+                    }
+                     mListenStarted = false;
+                    //Stop Active INBOUND Transfer
+                    if(mServerTransfer != null){
+                       mServerTransfer.onBatchCanceled();
+                       mServerTransfer =null;
+                    }
+                    //Stop Active OUTBOUND Transfer
+                    if(mTransfer != null){
+                       mTransfer.onBatchCanceled();
+                       mTransfer =null;
+                    }
                     synchronized (BluetoothOppService.this) {
                         if (mUpdateThread == null) {
                             stopSelf();
@@ -367,6 +380,7 @@ public class BluetoothOppService extends Service {
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
                         if (V) Log.v(TAG, "Receiver DISABLED_ACTION ");
+						mNotifier.updateNotifier();
                         //FIX: Don't block main thread
                         /*
                         mSocketListener.stop();

@@ -153,6 +153,16 @@ class BluetoothOppNotification {
             }
         }
     }
+	
+    public void updateNotifier() {
+        if (V) Log.v(TAG, "updateNotifier while BT is Turning OFF");
+        synchronized (BluetoothOppNotification.this) {
+            updateActiveNotification();
+            mUpdateCompleteNotification = true;
+            updateCompletedNotification();
+            updateIncomingFileConfirmNotification();
+        }
+    }
 
     private static final int NOTIFY = 0;
     // Use 1 second timer to limit notification frequency.
